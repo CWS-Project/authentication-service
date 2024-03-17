@@ -1,15 +1,16 @@
 from fastapi import APIRouter, Response
-from controller import AuthController
-from dtypes import make_response
+from service import AuthService
+from dtypes import make_response, NewUserRequest
+from util import DatabaseSession
 
-auth_controller = AuthController("a")
+auth_service = AuthService(
+    dbc=DatabaseSession()
+)
 
 router = APIRouter(prefix="/api/v1/auth")
 
 @router.post("/")
-async def login_user(response: Response):
-    success, data = auth_controller.login("a", "b")
-    if not success:
-        response.status_code = 400
-        return make_response(400, "Invalid credentials")
-    return make_response(200, "OK", data)
+async def create_user(user: NewUserRequest, response: Response):
+    print(user.__dict__)
+    success, data = auth_service.register(**user.__dict__)
+    return make_response(201 if success else 400, data=data)
