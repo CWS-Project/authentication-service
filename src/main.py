@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from dtypes import make_response
-from routes import auth_router
+from controllers import auth_router
 
 app = FastAPI()
 app.include_router(auth_router)
