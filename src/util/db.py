@@ -70,6 +70,6 @@ class DatabaseSession:
     def close(self) -> None:
         self._client.close()
 
-    def __del__(self):
-        self.close()
-        print("Connection to MongoDB closed")
+    # def __del__(self):
+    #     self.close()
+    #     print("Connection to MongoDB closed")

@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from dtypes import make_response
-from controllers import auth_router
+from controllers import auth_router, customer_router
 
 app = FastAPI()
 app.include_router(auth_router)
+app.include_router(customer_router)
 
 @app.get("/healthz")
 def health_check():

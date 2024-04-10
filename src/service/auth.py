@@ -21,6 +21,7 @@ class AuthService:
         return False, None
 
     def register(self, **kwargs) -> Tuple[bool, dict]:
+        kwargs["address"] = kwargs["address"].__dict__
         kwargs["password"] = bcrypt.hashpw(kwargs["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         success, user_id = self._db_client.insert("users", kwargs)
         return success, {"user_id": user_id}
