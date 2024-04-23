@@ -9,13 +9,13 @@ class CustomerService:
         self._db_client = dbc
     
     def get_cart_by_user(self, user_id: str) -> Tuple[bool, dict | None]:
-        success, cart = self._db_client.findOne("users", {"_id": ObjectId(user_id)}, {"_id": 0, "password": 0})
+        success, cart = self._db_client.findOne("users", {"_id": ObjectId(user_id)}, {"cart": 1})
         if not success:
             return False, None
         return True, cart["cart"]
     
     def add_to_cart(self, user_id: str, product_id: str, quantity: int) -> Tuple[bool, dict]:
-        success, cart = self._db_client.findOne("users", {"_id": ObjectId(user_id)}, {"_id": 0, "password": 0})
+        success, cart = self._db_client.findOne("users", {"_id": ObjectId(user_id)}, {"cart": 1})
         if not success:
             return False, None
         cart["cart"].append({"product_id": product_id, "quantity": quantity})
@@ -57,4 +57,10 @@ class CustomerService:
         if not success:
             return False, None
         return True, address["address"]
+    
+    def get_profile(self, user_id: str) -> Tuple[bool, dict]:
+        success, profile = self._db_client.findOne("users", {"_id": ObjectId(user_id)}, {"_id": 0, "password": 0})
+        if not success:
+            return False, None
+        return True, profile
     

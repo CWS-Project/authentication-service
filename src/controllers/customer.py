@@ -64,3 +64,10 @@ async def get_address(user_id: str, response: Response):
     if not success:
         return make_response(response, 400, message="Failed to get address")
     return make_response(response, data=result, message="Address retrieved successfully")
+
+@router.get("/profile/{user_id}")
+async def get_profile(user_id: str, response: Response):
+    success, result = customer_service.get_profile(user_id)
+    if not success:
+        return make_response(response, 400, message="Failed to get profile")
+    return make_response(response, data=result, message="Profile retrieved successfully")
