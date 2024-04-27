@@ -18,6 +18,12 @@ class CustomerService:
         success, cart = self._db_client.findOne("users", {"_id": ObjectId(user_id)}, {"cart": 1})
         if not success:
             return False, None
+        # Check if product already exists in cart
+        for item in cart["cart"]:
+            if item["product_id"] == product_id:
+                item["quantity"] += quantity
+                success, _ = self._db_client.updateOne("users", {"_id": ObjectId(user_id)}, {"cart": cart["cart"]})
+                return success, cart["cart"]
         cart["cart"].append({"product_id": product_id, "quantity": quantity})
         success, _ = self._db_client.updateOne("users", {"_id": ObjectId(user_id)}, {"cart": cart["cart"]})
         return success, cart["cart"]
