@@ -44,9 +44,32 @@ class AuthService:
         return True, data
     
     def refresh_session(self, access_token: str, refresh_token: str) -> Tuple[bool, dict | None]:
-        data, _ = self._jwt_handler.verify_token(refresh_token, True)
+        data, error = self._jwt_handler.verify_token(refresh_token, True)
+        if error:
+            print(f"Auth Error: {error}")
+            return False, None
         user_id = data.get("user_id")
         if not user_id:
             return False, None
         access_token, refresh_token = self._jwt_handler.create_tokens({"user_id": user_id})
         return True, {"access_token": access_token, "refresh_token": refresh_token}
+
+    def change_password(self, access_token: str, current_password: str, new_password: str) -> Tuple[bool, dict | None]:
+        data, error = self._jwt_handler.verify_token(access_token)
+        if error:
+            print(f"Auth Error: {error}")
+            return False, None
+        user_id = data.get("user_id")
+        if not user_id:
+            print("User ID not found")
+            return False, None
+        success, user = self._db_client.findOne("users", {"_id": ObjectId(user_id)})
+        if not success:
+            print("User not found")
+            return False, None
+        if bcrypt.checkpw(current_password.encode("utf-8"), str(user["password"]).encode("utf-8")):
+            new_password = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+            success, _ = self._db_client.update("users", {"_id": ObjectId(user_id)}, {"password": new_password})
+            return success, None
+        print("Password mismatch")
+        return False, None

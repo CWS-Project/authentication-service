@@ -77,3 +77,26 @@ async def refresh_token(request: Request, response: Response):
         message="Refresh Success" if success else "Refresh failed", 
         data=data
     )
+
+@router.put("/me")
+async def change_password(request: Request, response: Response):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        return make_response(response, 400, message="Authorization header not found")
+    
+    auth_type, auth_token = auth_header.split(" ")
+    if auth_type.lower() != "bearer":
+        return make_response(response, 400, message="Invalid authorization type")
+    
+    if not auth_token:
+        return make_response(response, 400, message="Authorization token not found")
+    
+    body = await request.json()
+    success, data = auth_service.change_password(auth_token, body['old_password'], body['new_password'])
+    return make_response(
+        response,
+        200 if success else 400, 
+        message="Password changed" if success else "Password change failed", 
+        data=data
+    )
+    
