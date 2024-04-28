@@ -48,8 +48,5 @@ class AuthService:
         user_id = data.get("user_id")
         if not user_id:
             return False, None
-        success, data = self.get_profile_by_id(user_id)
-        if not success:
-            return False, None
         access_token, refresh_token = self._jwt_handler.create_tokens({"user_id": user_id})
         return True, {"access_token": access_token, "refresh_token": refresh_token}
