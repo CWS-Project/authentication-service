@@ -44,7 +44,7 @@ class AuthService:
         return True, data
     
     def refresh_session(self, access_token: str, refresh_token: str) -> Tuple[bool, dict | None]:
-        data, _ = self._jwt_handler.verify_token(refresh_token)
+        data, _ = self._jwt_handler.verify_token(refresh_token, True)
         user_id = data.get("user_id")
         if not user_id:
             return False, None
